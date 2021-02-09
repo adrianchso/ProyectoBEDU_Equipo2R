@@ -9,17 +9,17 @@ library(dplyr)
 
 #datos <- do.call(rbind, datos)
 
-datos <- read.csv("dfOaxaca.csv")
-datos
-AgriOaxaca <- filter(datos, datos$Nomestado == "Oaxaca", datos$Nommodalidad == "Temporal")
+#datos <- read.csv("dfOaxaca.csv")
+#datos
+#AgriOaxaca <- filter(datos, datos$Nomestado == "Oaxaca", datos$Nommodalidad == "Temporal")
 
 
-AgriOaxacasin <- AgriOaxaca %>%  group_by(Anio,Nomcultivo) %>% summarize(totalsin = sum(Siniestrada))
+#AgriOaxacasin <- AgriOaxaca %>%  group_by(Anio,Nomcultivo) %>% summarize(totalsin = sum(Siniestrada))
 
-dfOaxaca <- as.data.frame(AgriOaxacasin)
+#dfOaxaca <- as.data.frame(AgriOaxacasin)
 
 #Eliminar renglones no importantes 
-dfOaxaca <- filter(dfOaxaca, dfOaxaca$totalsin != 0)
+#dfOaxaca <- filter(dfOaxaca, dfOaxaca$totalsin != 0)
 
 #write.csv(dfOaxaca, "dfOaxaca.csv")
 
@@ -30,13 +30,13 @@ dfmaiz <- filter(dfOaxaca, dfOaxaca$Nomcultivo== "Maiz grano")
 dfmaiz <- select(dfmaiz, Anio, totalsin)
 
 
-#dfOaxaca.año <- dfOaxaca %>% group_by(Anio) %>% summarize(totalsin = sum(totalsin))
+#dfOaxaca.aÃ±o <- dfOaxaca %>% group_by(Anio) %>% summarize(totalsin = sum(totalsin))
 
-#ts.Agriaño <- ts(dfOaxaca.año[,2], start=2000, end = 2019)
+#ts.AgriaÃ±o <- ts(dfOaxaca.aÃ±o[,2], start=2000, end = 2019)
 
 ts.maiz <- ts(dfmaiz[,2], start = 2000, end= 2019)
 
-#Normalizar los datos para graficar ambas series de tiempo en la misma gr�fica
+#Normalizar los datos para graficar ambas series de tiempo en la misma gráfica
 
 normalize <- function(x) {
   return ((x - min(x)) / (max(x) - min(x)))
@@ -52,23 +52,23 @@ data.Oax.ts <- ts(data.Oax.norm, start = 2000)
 dfmaiz.norm <- normalize(dfmaiz$totalsin)
 dfmaiz.ts <- ts(dfmaiz.norm, start = 2000)
 
-#Gr�ficas de series de tiempo (conjunta e individuales)
+#Gráficas de series de tiempo (conjunta e individuales)
 
 plot(data.Oax.ts,lty = 1, lwd = 2, col = "darkolivegreen3", 
-     main = "Hect�reas siniestradas de Ma�z", xlab = "A�os", 
+     main = "Hectáreas siniestradas de Maíz", xlab = "Años", 
      ylab = "Magnitud (Datos Normalizados)", sub = "Periodo 2000- 2019")
 
 plot(dfmaiz.ts,lty = 1, lwd = 2, col = "cornflowerblue", 
-     main = "Luvias en la regi�n (Oaxaca)", xlab = "A�os", 
+     main = "Luvias en la región (Oaxaca)", xlab = "Años", 
      ylab = "Magnitud (Datos Normalizados)", sub = "Periodo 2000- 2019")
 
 ts.plot(cbind(dfmaiz.ts,data.Oax.ts), lty = 1:1, lwd = 2:2 ,
-        col = c("darkolivegreen3","cornflowerblue"), main = "Evoluci�n de los Fen�menos",
-        xlab = "A�os", ylab = "Magnitud (Datos Normalizados)", sub = "Periodo 2000- 2019")
-legend("topleft", legend = c("Ma�z Siniestrado","Luvias"),
+        col = c("darkolivegreen3","cornflowerblue"), main = "Evolución de los Fenómenos",
+        xlab = "Años", ylab = "Magnitud (Datos Normalizados)", sub = "Periodo 2000- 2019")
+legend("topleft", legend = c("Maíz Siniestrado","Luvias"),
        col= c("darkolivegreen3","cornflowerblue"), pch=1)
 
-#Gr�fica de dispersi�n con la l�nea de regresi�n
+#Gráfica de dispersión con la línea de regresión
 
 library(ggplot2)
 scatter <- cbind(hectareas = dfmaiz$totalsin,data.Oax)
@@ -77,13 +77,13 @@ ggplot(scatter, aes(x = Lluvias, y = hectareas)) +
   geom_point() +
   geom_smooth(method ='lm', se = F, color = "brown1") + 
   theme_light() + 
-  labs(x = "Magnitud de Lluvias (mm)", y = "Hect�reas Siniestradas de Ma�z") +
-  ggtitle(expression(atop("Mapa de Dispersi�n con L�nea de M�nimos Cuadrados", 
+  labs(x = "Magnitud de Lluvias (mm)", y = "Hectáreas Siniestradas de Maíz") +
+  ggtitle(expression(atop("Mapa de Dispersión con Línea de Mínimos Cuadrados", 
                           atop(italic("Periodo 2000 - 2019"), "")))) +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(axis.text.x = element_text(angle=-30, hjust=0, vjust= 1))
 
-#Gr�fica de pastel
+#Gráfica de pastel
 
 Oaxaca.cult <- dfOaxaca %>%  group_by(Nomcultivo) %>% summarize(totalcult = sum(totalsin))
 maiz <- filter(Oaxaca.cult, Oaxaca.cult$Nomcultivo == "Maiz grano") %>% 
@@ -96,7 +96,7 @@ pie(pal.pie$total, labels = c("Maiz Grano", "Otros"),
     col = c("cadetblue2", "deepskyblue4"), 
     main = "Toneladas siniestradas de cultivos en Oaxaca, Mx", radius = 1)
 
-# An�lisis de los datos: regresi�n lineal
+# Análisis de los datos: regresión lineal
 
 attach(scatter)
 analisis <- lm(hectareas ~ Lluvias)
@@ -109,15 +109,15 @@ ggplot(newscatter, aes(x = Lluvias, y = hectareas)) +
   geom_point() +
   geom_smooth(method ='lm', se = T, color = "brown1") + 
   theme_light() + 
-  labs(x = "Magnitud de Lluvias (mm)", y = "Hect�reas Siniestradas de Ma�z") +
-  ggtitle(expression(atop("Visualizaci�n de Intervalos: Confianza y Pron�stico", 
+  labs(x = "Magnitud de Lluvias (mm)", y = "Hectáreas Siniestradas de Maíz") +
+  ggtitle(expression(atop("Visualización de Intervalos: Confianza y Pronóstico", 
                           atop(italic("Periodo 2000 - 2019"), "")))) +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(axis.text.x = element_text(angle=-30, hjust=0, vjust= 1)) +
   geom_line(aes(y = lwr), color = "chartreuse3", lty = 2, lwd = 1.5) + 
   geom_line(aes(y = upr), color = "chartreuse3", lty = 2, lwd = 1.5)
 
-# Predicci�n usando ARMA y Akaike
+# Predicción usando ARMA y Akaike
 
 ts.maiz
 tiempo <- 1:length(ts.maiz)
@@ -142,11 +142,11 @@ pronos.arma <- predict(arma, n.ahead = 3)
 hec.sin.pred <- ts(exp(pronos.lm[18:20] + pronos.arma$pred), start = 2019)
 ts.plot(cbind(ts.maiz, hec.sin.pred), lty = 1:2, 
         col = c("blue", "red"), xlab = "Tiempo", 
-        ylab = "Hect�reas",
-        main = "Predicci�n de Hect�reas Siniestradas de Ma�z",
-        sub = "Predicci�n de los pr�ximos 3 a�os") 
+        ylab = "Hectáreas",
+        main = "Predicción de Hectáreas Siniestradas de Maíz",
+        sub = "Predicción de los próximos 3 años") 
 
-# Predicci�n usando resultados de la regresi�n lineal
+# Predicción usando resultados de la regresión lineal
 
 prono_lluvia <- 1850.2
 nueva_estim <- -164490.49+156.46*prono_lluvia
@@ -155,8 +155,8 @@ ggplot(newscatter, aes(x = Lluvias, y = hectareas)) +
   geom_point() +
   geom_smooth(method ='lm', se = F, color = "brown1") + 
   theme_light() + 
-  labs(x = "Magnitud de Lluvias (mm)", y = "Hect�reas Siniestradas de Ma�z") +
-  ggtitle(expression(atop("Pron�stico Puntual y de Intervalo para 2020", 
+  labs(x = "Magnitud de Lluvias (mm)", y = "Hectáreas Siniestradas de Maíz") +
+  ggtitle(expression(atop("Pronóstico Puntual y de Intervalo para 2020", 
                           atop(italic("Periodo 2000 - 2019"), "")))) +
   theme(plot.title = element_text(hjust = 0.5)) +
   theme(axis.text.x = element_text(angle=-30, hjust=0, vjust= 1)) +
@@ -169,9 +169,9 @@ ggplot(newscatter, aes(x = Lluvias, y = hectareas)) +
 
 ts.plot(cbind(ts.maiz, hec.sin.pred), lty = 1:2, lwd = 1:2, 
         col = c("blue", "red"), xlab = "Tiempo", 
-        ylab = "Hect�reas",
-        main = "Predicci�n de Hect�reas Siniestradas de Ma�z: ARMA vs. Regresi�n",
-        sub = "Predicci�n puntual 2020") 
+        ylab = "Hectáreas",
+        main = "Predicción de Hectáreas Siniestradas de Maíz: ARMA vs. Regresión",
+        sub = "Predicción puntual 2020") 
 points(x = 2020, y = nueva_estim, col = "red", pch = 16)
 abline(h=152500, lty = 3, col = "darkgoldenrod2")
 abline(h=120000, lty = 3, col = "darkgoldenrod2")
